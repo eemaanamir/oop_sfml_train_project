@@ -326,11 +326,15 @@ public:
             cout<<"Adult number "<<i+1<<": "<<endl;
             Adults[i].print();
         }
+        if(a==0)
+            cout<<"There are no Adults in this Family.\n";
         for(int i=0;i<k;i++)
         {
             cout<<"Kid number "<<i+1<<": "<<endl;
             kids[i].print();
         }
+        if(k==0)
+            cout<<"There are no Kids in this Family.\n";
     }
     friend istream& operator>>(istream& in, Family& fam)
     {
