@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 #include <SFML/Graphics.hpp>
-
+#include "train classes.h"
 
 class Button
 {
@@ -44,8 +44,6 @@ class Button
     }
 };
 
-
-
 int main()
 {
 
@@ -59,12 +57,12 @@ int main()
     sf::Font buttonFont;
     buttonFont.loadFromFile("Raleway-Medium.ttf");
 
-    Button quitButton(950,500,120,30,&buttonFont,"Quit",sf::Color(255,255,255,180));
-    Button printButton(950,460,120,30,&buttonFont,"Print Train",sf::Color(255,255,255,180));
-    Button findButton(950,420,120,30,&buttonFont,"Find Bogie",sf::Color(255,255,255,180));
-    Button reserveButton(950,380,120,30,&buttonFont,"Reserve Bogie",sf::Color(255,255,255,180));
-    Button deleteButton(950,340,120,30,&buttonFont,"Delete Bogie",sf::Color(255,255,255,180));
     Button addButton(950,300,120,30,&buttonFont,"Add Bogie",sf::Color(255,255,255,180));
+    Button deleteButton(950,340,120,30,&buttonFont,"Delete Bogie",sf::Color(255,255,255,180));
+    Button reserveButton(950,380,120,30,&buttonFont,"Reserve Bogie",sf::Color(255,255,255,180));
+    Button findButton(950,420,120,30,&buttonFont,"Find Bogie",sf::Color(255,255,255,180));
+    Button printButton(950,460,120,30,&buttonFont,"Print Train",sf::Color(255,255,255,180));
+    Button quitButton(950,500,120,30,&buttonFont,"Quit",sf::Color(255,255,255,180));
 
     sf::Font titleFont;
     titleFont.loadFromFile("PlayfairDisplay-Bold.otf");
@@ -92,6 +90,22 @@ int main()
     Heading3.setFillColor(sf::Color(255,255,255,255));
     Heading3.setPosition(935,230);
 
+
+
+    int *arrayOfIDs;
+    int arraySize=0;
+    int ID;
+    cout<<"The engine for your Hogwarts Express has been created\nPlease input the ID for your engine:";
+    cin>>ID;
+    Bogie engineTemp(ID);
+    train HogwartsExpress(engineTemp);
+    cout<<"The ID "<<ID<<" has been assigned to your train engine.\n";
+
+    arraySize++;
+    arrayOfIDs=new int[arraySize];
+    arrayOfIDs[0]=ID;
+
+
     while (window.isOpen())
     {
 
@@ -108,23 +122,79 @@ int main()
                 window.close();
             else if(addButton.isPressed(mousePosition))
             {
-
+                int id;
+                cout<<"Please enter the ID for your new bogie: ";
+                cin>>id;
+                while(checkID(arrayOfIDs,arraySize,id))
+                {
+                    cout<<"The bogie of this ID already exists, please input again: ";
+                    cin>>id;
+                }
+                Bogie temp(id);
+                HogwartsExpress.addBogie(temp);
+                addID(arrayOfIDs,arraySize,id);
+                cout<<"Your bogie of ID "<<id<<" has successfully been added to the end of the train.\n";
             }
             else if(deleteButton.isPressed(mousePosition))
             {
-
+                int id;
+                cout<<"Please enter the ID of the bogie you want to delete: ";
+                cin>>id;
+                if(!HogwartsExpress.SearchBogie(id) && HogwartsExpress.SearchBogie(id)!=-1)
+                    cout<<"\nThe bogie of ID "<<id<<" does not exist.\n";
+                else if(HogwartsExpress.SearchBogie(id)==-1)
+                    cout<<"\nThe engine of the train can not be deleted.\n";
+                else
+                {
+                    bool temp;
+                    temp=HogwartsExpress.removeBogie(id);
+                    deleteID(arrayOfIDs,arraySize,id);
+                    cout<<"\nThe bogie of ID "<<id<<" has successfully been removed.\n";
+                }
             }
             else if(reserveButton.isPressed(mousePosition))
             {
-
+                if(!HogwartsExpress.hasAvailable())
+                    cout<<"\nNo bogies are available for reservation.\n";
+                else
+                {
+                    int id;
+                    cout << "The following bogies are available for reservation:\n";
+                    HogwartsExpress.printAvailable();
+                    cout<<"Please choose an ID: ";
+                    cin>>id;
+                    if(HogwartsExpress.isAvailable(id))
+                    {
+                        Family temp;
+                        cin>>temp;
+                        HogwartsExpress.addPassengers(id,temp);
+                        cout<<"\nYour Bogie "<<id<<" has been successfully reserved.\n";
+                    }
+                    else
+                    {
+                        cout<<"\nNo such Bogie exists.\n";
+                    }
+                }
             }
             else if(findButton.isPressed(mousePosition))
             {
-
+                int id;
+                cout<<"Enter the ID of the bogie you wish to find: ";
+                cin>>id;
+                if(!HogwartsExpress.SearchBogie(id) && HogwartsExpress.SearchBogie(id)!=-1)
+                {
+                    cout<<"\nThe bogie of ID "<<id<<" does not exist.\n";
+                }
+                else if(HogwartsExpress.SearchBogie(id)==-1)
+                    cout<<"\nYour bogie of ID "<<id<<" is the engine.\n";
+                else
+                {
+                    cout<<"\nThe bogie of ID "<<id<<" has successfully been found at position number "<<HogwartsExpress.SearchBogie(id)<<endl;
+                }
             }
             else if(printButton.isPressed(mousePosition))
             {
-
+                HogwartsExpress.printTrain();
             }
         }
 
