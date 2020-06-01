@@ -602,20 +602,30 @@ public:
         }
         if(index==-1)
             return false;
-        Bogie temp[--number];
-        int j=0;
-        for(int i=0;i<number;i++,j++)
+        if(number!=1)
         {
-            if(j==index)
-                j++;
-            temp[i]=bogies[j];
-        }
-        delete[] bogies;
-        bogies=new Bogie[number];
-        for(int i=0;i<number;i++)
-            bogies[i]=temp[i];
+            Bogie temp[--number];
+            int j = 0;
+            for (int i = 0; i < number; i++, j++) {
+                if (j == index)
+                    j++;
+                temp[i] = bogies[j];
+            }
+            delete[] bogies;
+            bogies = new Bogie[number];
+            for (int i = 0; i < number; i++)
+                bogies[i] = temp[i];
 
-        this->fixReferences();
+            this->fixReferences();
+        }
+        else
+        {
+            number--;
+            delete[] bogies;
+            bogies=NULL;
+            engine->setNextNull();
+        }
+
         return true;
     }
     void printTrain() //print only the Bogie_ID of all bogies
@@ -632,8 +642,7 @@ public:
             {
                 for(int i=0;i<number;i++)
                 {
-                    cout<<"BOGIE NUMBER "<<i+1<<" :\n";
-                    bogies[i].Print();
+                    cout<<"ID of Bogie Number "<<i+1<<": "<<bogies[i].Bogie_ID<<endl;
                 }
             }
         }
@@ -712,6 +721,13 @@ public:
             if(bogies[i].Bogie_ID==id)
                 bogies[i].AddPassengers(fam);
         }
+    }
+    void printBogie(int index)
+    {
+        if(index==-1)
+            engine->Print();
+        else
+            bogies[index-1].Print();
     }
     ~train()
     {
