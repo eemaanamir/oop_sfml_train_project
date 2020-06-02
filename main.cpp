@@ -358,7 +358,9 @@ public:
         fam.a=num;
         if(fam.Adults!= nullptr)
             delete[] fam.Adults;
-        fam.Adults=new Adult[num];
+        fam.Adults=nullptr;
+        if(fam.a!=0)
+            fam.Adults=new Adult[fam.a];
         for(int i=0;i<num;i++)
         {
             cout<<"Please enter the data for Adult number "<<i+1<<" :\n";
@@ -376,15 +378,17 @@ public:
         fam.k=num;
         if(fam.kids!= nullptr)
             delete[] fam.kids;
-        fam.kids=new kid[num];
+        fam.kids=nullptr;
+        if(fam.k!=0)
+        {
+            fam.kids = new kid[num];
+        }
         for(int i=0;i<num;i++)
         {
             cout<<"Please enter the data for Kid number "<<i+1<<" :\n";
             in>>fam.kids[i];
         }
-
         return in;
-
     }
     Family& operator=(Family& fam)
     {
@@ -670,7 +674,11 @@ public:
     }
     void setEngine(Bogie en)
     {
-        engine=&en;
+        if(engine!=nullptr)
+            delete[] engine;
+        engine=new Bogie[1];
+        engine[0]=en;
+
     }
     bool printAvailable()
     {
@@ -838,12 +846,11 @@ class Button
     }
 };
 
-int main()
-{
+int main() {
 
-    sf::RenderWindow window(sf::VideoMode(1125, 562.5), "TRAIN STATION APP",sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(1125, 562.5), "TRAIN STATION APP", sf::Style::Close);
 
-    sf::RectangleShape background(sf::Vector2f(1125.0f,562.5f));
+    sf::RectangleShape background(sf::Vector2f(1125.0f, 562.5f));
     sf::Texture backgroundTexture;
     backgroundTexture.loadFromFile("background.jpg");
     background.setTexture(&backgroundTexture);
@@ -851,12 +858,12 @@ int main()
     sf::Font buttonFont;
     buttonFont.loadFromFile("Raleway-Medium.ttf");
 
-    Button addButton(950,300,120,30,&buttonFont,"Add Bogie",sf::Color(255,255,255,180));
-    Button deleteButton(950,340,120,30,&buttonFont,"Delete Bogie",sf::Color(255,255,255,180));
-    Button reserveButton(950,380,120,30,&buttonFont,"Reserve Bogie",sf::Color(255,255,255,180));
-    Button findButton(950,420,120,30,&buttonFont,"Find Bogie",sf::Color(255,255,255,180));
-    Button printButton(950,460,120,30,&buttonFont,"Print Train",sf::Color(255,255,255,180));
-    Button quitButton(950,500,120,30,&buttonFont,"Quit",sf::Color(255,255,255,180));
+    Button addButton(950, 300, 120, 30, &buttonFont, "Add Bogie", sf::Color(255, 255, 255, 180));
+    Button deleteButton(950, 340, 120, 30, &buttonFont, "Delete Bogie", sf::Color(255, 255, 255, 180));
+    Button reserveButton(950, 380, 120, 30, &buttonFont, "Reserve Bogie", sf::Color(255, 255, 255, 180));
+    Button findButton(950, 420, 120, 30, &buttonFont, "Find Bogie", sf::Color(255, 255, 255, 180));
+    Button printButton(950, 460, 120, 30, &buttonFont, "Print Train", sf::Color(255, 255, 255, 180));
+    Button quitButton(950, 500, 120, 30, &buttonFont, "Quit", sf::Color(255, 255, 255, 180));
 
     sf::Font titleFont;
     titleFont.loadFromFile("PlayfairDisplay-Bold.otf");
@@ -865,196 +872,298 @@ int main()
     Heading1.setString("WELCOME TO PLATFORM  9 3/4");
     Heading1.setFont(titleFont);
     Heading1.setCharacterSize(40);
-    Heading1.setFillColor(sf::Color(255,255,255,255));
+    Heading1.setFillColor(sf::Color(255, 255, 255, 255));
     Heading1.setOutlineColor(sf::Color::Black);
-    Heading1.setPosition(75,40);
+    Heading1.setPosition(75, 40);
 
     sf::Text Heading2;
     Heading2.setString("THIS IS YOUR HOGWARTS EXPRESS!!");
     Heading2.setFont(titleFont);
     Heading2.setCharacterSize(20);
-    Heading2.setFillColor(sf::Color(255,255,255,255));
+    Heading2.setFillColor(sf::Color(255, 255, 255, 255));
     Heading2.setOutlineColor(sf::Color::Black);
-    Heading2.setPosition(180,100);
+    Heading2.setPosition(180, 100);
 
     sf::Text Heading3;
     Heading3.setString("Please select one \nof the following \noptions to proceed:");
     Heading3.setFont(titleFont);
     Heading3.setCharacterSize(16);
-    Heading3.setFillColor(sf::Color(255,255,255,255));
-    Heading3.setPosition(935,230);
+    Heading3.setFillColor(sf::Color(255, 255, 255, 255));
+    Heading3.setPosition(935, 230);
 
 
     sf::RectangleShape messageBox;
-    messageBox.setSize(sf::Vector2f (400,210));
-    messageBox.setPosition(sf::Vector2f (300,320));
-    messageBox.setFillColor(sf::Color(255,255,255,150));
+    messageBox.setSize(sf::Vector2f(400, 210));
+    messageBox.setPosition(sf::Vector2f(300, 320));
+    messageBox.setFillColor(sf::Color(255, 255, 255, 150));
 
     sf::Text message;
     message.setFont(buttonFont);
     message.setCharacterSize(15);
     message.setFillColor(sf::Color::Black);
-    message.setPosition(310,330);
+    message.setPosition(310, 330);
 
-    string s="PLEASE INPUT THE ID OF YOUR ENGINE IN CONSOLE TO LAUNCH YOUR TRAIN STATION APP.";
-    sf::Text firstPrompt;
-    firstPrompt.setString(s);
-    firstPrompt.setFont(titleFont);
-    firstPrompt.setCharacterSize(20);
-    firstPrompt.setFillColor(sf::Color::White);
-    firstPrompt.setPosition(100,250);
-    window.clear();
-    window.draw(firstPrompt);
-    window.display();
-
+    Button firstPromptButton(465, 250, 165, 30, &titleFont, "  CLICK TO START.", sf::Color(255, 225, 255, 180));
 
     int *arrayOfIDs;
-    int arraySize=0;
+    int arraySize = 0;
     int ID;
-    cout<<"The engine for your Hogwarts Express has been created\nPlease input the ID for your engine:";
-    cin>>ID;
-    Bogie engineTemp(ID);
-    train HogwartsExpress(engineTemp);
-    cout<<"The ID "<<ID<<" has been assigned to your train engine.\n";
+    train HogwartsExpress;
 
     arraySize++;
-    arrayOfIDs=new int[arraySize];
-    arrayOfIDs[0]=ID;
+    arrayOfIDs = new int[arraySize];
+    arrayOfIDs[0] = ID;
 
+    bool firstTime = true;
 
     while (window.isOpen())
     {
-
         sf::Event evnt;
         while (window.pollEvent(evnt))
         {
             if (evnt.type == sf::Event::Closed)
                 window.close();
-        }
-        if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
-        {
-            sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-            if(quitButton.isPressed(mousePosition))
-                window.close();
-            else if(addButton.isPressed(mousePosition))
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
             {
-                window.draw(messageBox);
-                string stringMessage="\nPlease proceed to the console window\n to input info of the bogie you want \nto add to Hogwarts express:";
-                message.setString(stringMessage);
-                window.draw(message);
-                window.display();
-
-                int id;
-                cout<<"Please enter the ID for your new bogie: ";
-                cin>>id;
-                while(checkID(arrayOfIDs,arraySize,id))
-                {
-                    cout<<"The bogie of this ID already exists, please input again: ";
-                    cin>>id;
-                }
-                Bogie temp(id);
-                HogwartsExpress.addBogie(temp);
-                addID(arrayOfIDs,arraySize,id);
-                cout<<"\nINPUT COMPLETE PROCEED TO THE GUI WINDOW.\n\n";
-
-                window.clear();
-                window.draw(background);
-
-                window.draw(Heading1);
-                window.draw(Heading2);
-                window.draw(Heading3);
-
-                addButton.render(window);
-                deleteButton.render(window);
-                reserveButton.render(window);
-                findButton.render(window);
-                printButton.render(window);
-                quitButton.render(window);
-
-                window.draw(messageBox);
-                stringMessage="\nYour Bogie has successfully been added \nto the end of Hogwarts Express.\n";
-                message.setString(stringMessage);
-                window.draw(message);
-
-                window.display();
-                sleep(6);
-            }
-            else if(deleteButton.isPressed(mousePosition))
-            {
-                window.draw(messageBox);
-                string stringMessage="\nPlease proceed to the console window\n to input ID of the bogie you want \nto delete from Hogwarts express:";
-                message.setString(stringMessage);
-                window.draw(message);
-                window.display();
-
-
-                int id;
-                cout<<"Please enter the ID of the bogie you want to delete: ";
-                cin>>id;
-                if(!HogwartsExpress.SearchBogie(id) && HogwartsExpress.SearchBogie(id)!=-1)
-                    stringMessage="\nThe bogie of your entered ID does not exist.\n";
-                else if(HogwartsExpress.SearchBogie(id)==-1)
-                    stringMessage="\nThe engine of the Hogwarts Express can not be deleted.\n";
-                else
-                {
-                    bool temp=HogwartsExpress.removeBogie(id);
-                    deleteID(arrayOfIDs,arraySize,id);
-                    stringMessage="\nYour Bogie has successfully been deleted \nfrom Hogwarts Express.\n";
-                }
-                cout<<"\nINPUT COMPLETE PROCEED TO THE GUI WINDOW.\n\n";
-
-                window.clear();
-                window.draw(background);
-
-                window.draw(Heading1);
-                window.draw(Heading2);
-                window.draw(Heading3);
-
-                addButton.render(window);
-                deleteButton.render(window);
-                reserveButton.render(window);
-                findButton.render(window);
-                printButton.render(window);
-                quitButton.render(window);
-
-                window.draw(messageBox);
-                message.setString(stringMessage);
-                window.draw(message);
-
-                window.display();
-                sleep(6);
-            }
-            else if(reserveButton.isPressed(mousePosition))
-            {
-                string stringMessage;
-                if(!HogwartsExpress.hasAvailable())
-                    stringMessage = "\nNo bogies are available for reservation.\n";
-                else
+                sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+                if (quitButton.isPressed(mousePosition))
+                    window.close();
+                else if (addButton.isPressed(mousePosition))
                 {
                     window.draw(messageBox);
-                    stringMessage="\nPlease proceed to the console window\n to input info of the\n bogie you want to reserve in Hogwarts express:";
+                    string stringMessage = "\nPlease proceed to the console window\n to input info of the bogie you want \nto add to Hogwarts express:";
                     message.setString(stringMessage);
                     window.draw(message);
                     window.display();
+
                     int id;
-                    cout << "The following bogies are available for reservation:\n";
-                    HogwartsExpress.printAvailable();
-                    cout<<"Please choose an ID: ";
-                    cin>>id;
-                    if(HogwartsExpress.isAvailable(id))
+                    cout << "Please enter the ID for your new bogie: ";
+                    cin >> id;
+                    while (checkID(arrayOfIDs, arraySize, id))
                     {
-                        Family temp;
-                        cin>>temp;
-                        HogwartsExpress.addPassengers(id,temp);
-                        stringMessage ="\nYour Bogie has been successfully reserved.\n";
+                        cout << "The bogie of this ID already exists, please input again: ";
+                        cin >> id;
+                    }
+                    Bogie temp(id);
+                    HogwartsExpress.addBogie(temp);
+                    addID(arrayOfIDs, arraySize, id);
+                    cout << "\nINPUT COMPLETE PROCEED TO THE GUI WINDOW.\n\n";
+
+                    window.clear();
+                    window.draw(background);
+
+                    window.draw(Heading1);
+                    window.draw(Heading2);
+                    window.draw(Heading3);
+
+                    addButton.render(window);
+                    deleteButton.render(window);
+                    reserveButton.render(window);
+                    findButton.render(window);
+                    printButton.render(window);
+                    quitButton.render(window);
+
+                    window.draw(messageBox);
+                    stringMessage = "\nYour Bogie has successfully been added \nto the end of Hogwarts Express.\n";
+                    message.setString(stringMessage);
+                    window.draw(message);
+
+                    window.display();
+                    sleep(6);
+                }
+                else if (deleteButton.isPressed(mousePosition))
+                {
+                    window.draw(messageBox);
+                    string stringMessage = "\nPlease proceed to the console window\n to input ID of the bogie you want \nto delete from Hogwarts express:";
+                    message.setString(stringMessage);
+                    window.draw(message);
+                    window.display();
+
+
+                    int id;
+                    cout << "Please enter the ID of the bogie you want to delete: ";
+                    cin >> id;
+                    if (!HogwartsExpress.SearchBogie(id) && HogwartsExpress.SearchBogie(id) != -1)
+                        stringMessage = "\nThe bogie of your entered ID does not exist.\n";
+                    else if (HogwartsExpress.SearchBogie(id) == -1)
+                        stringMessage = "\nThe engine of the Hogwarts Express can not be deleted.\n";
+                    else
+                    {
+                        bool temp = HogwartsExpress.removeBogie(id);
+                        deleteID(arrayOfIDs, arraySize, id);
+                        stringMessage = "\nYour Bogie has successfully been deleted \nfrom Hogwarts Express.\n";
+                    }
+                    cout << "\nINPUT COMPLETE PROCEED TO THE GUI WINDOW.\n\n";
+
+                    window.clear();
+                    window.draw(background);
+
+                    window.draw(Heading1);
+                    window.draw(Heading2);
+                    window.draw(Heading3);
+
+                    addButton.render(window);
+                    deleteButton.render(window);
+                    reserveButton.render(window);
+                    findButton.render(window);
+                    printButton.render(window);
+                    quitButton.render(window);
+
+                    window.draw(messageBox);
+                    message.setString(stringMessage);
+                    window.draw(message);
+
+                    window.display();
+                    sleep(6);
+                }
+                else if (reserveButton.isPressed(mousePosition))
+                {
+                    string stringMessage;
+                    if (!HogwartsExpress.hasAvailable())
+                        stringMessage = "\nNo bogies are available for reservation.\n";
+                    else {
+                        window.draw(messageBox);
+                        stringMessage = "\nPlease proceed to the console window\n to input info of the\n bogie you want to reserve in Hogwarts express:";
+                        message.setString(stringMessage);
+                        window.draw(message);
+                        window.display();
+                        int id;
+                        cout << "The following bogies are available for reservation:\n";
+                        HogwartsExpress.printAvailable();
+                        cout << "Please choose an ID: ";
+                        cin >> id;
+                        if (HogwartsExpress.isAvailable(id))
+                        {
+                            Family temp;
+                            cin >> temp;
+                            HogwartsExpress.addPassengers(id, temp);
+                            stringMessage = "\nYour Bogie has been successfully reserved.\n";
+                        }
+                        else
+                        {
+                            stringMessage = "\nNo such Bogie exists.\n";
+                        }
+                        cout << "\nINPUT COMPLETE PROCEED TO THE GUI WINDOW.\n\n";
+                    }
+                    window.clear();
+                    window.draw(background);
+
+                    window.draw(Heading1);
+                    window.draw(Heading2);
+                    window.draw(Heading3);
+
+                    addButton.render(window);
+                    deleteButton.render(window);
+                    reserveButton.render(window);
+                    findButton.render(window);
+                    printButton.render(window);
+                    quitButton.render(window);
+
+                    window.draw(messageBox);
+                    message.setString(stringMessage);
+                    window.draw(message);
+
+                    window.display();
+                    sleep(6);
+                }
+                else if (findButton.isPressed(mousePosition))
+                {
+                    window.draw(messageBox);
+                    string stringMessage = "\nPlease proceed to the console window\n to input ID of the bogie you want \nto find in Hogwarts express:";
+                    message.setString(stringMessage);
+                    window.draw(message);
+                    window.display();
+
+                    int id;
+                    cout << "Enter the ID of the bogie you wish to find: ";
+                    cin >> id;
+                    if (!HogwartsExpress.SearchBogie(id) && HogwartsExpress.SearchBogie(id) != -1)
+                    {
+                        stringMessage = "\nThe bogie of the ID you have input\ndoes not exist in Hogwarts Express.\n";
+                    }
+                    else if (HogwartsExpress.SearchBogie(id) == -1)
+                    {
+                        stringMessage = "\nYour bogie is the engine of the\nHogwarts Express.";
+                        cout << "Bogie Found.\nBOGIE INFO:\n";
+                        HogwartsExpress.printBogie(-1);
                     }
                     else
                     {
-                        stringMessage ="\nNo such Bogie exists.\n";
+                        stringMessage = "\nThe bogie of your inputted ID \nhas successfully been found in \nHogwarts Express.\n";
+                        cout << "\n Bogie found.\nBOGIE INFO:\n";
+                        HogwartsExpress.printBogie(HogwartsExpress.SearchBogie(id));
                     }
-                    cout<<"\nINPUT COMPLETE PROCEED TO THE GUI WINDOW.\n\n";
+                    cout << "\nINPUT COMPLETE PROCEED TO THE GUI WINDOW.\n\n";
+
+                    window.clear();
+                    window.draw(background);
+
+                    window.draw(Heading1);
+                    window.draw(Heading2);
+                    window.draw(Heading3);
+
+                    addButton.render(window);
+                    deleteButton.render(window);
+                    reserveButton.render(window);
+                    findButton.render(window);
+                    printButton.render(window);
+                    quitButton.render(window);
+
+                    window.draw(messageBox);
+                    message.setString(stringMessage);
+                    window.draw(message);
+
+                    window.display();
+                    sleep(6);
                 }
+                else if (printButton.isPressed(mousePosition))
+                {
+                    window.draw(messageBox);
+                    string stringMessage = "\nPlease proceed to the console window\n to see the printed info of the\n Hogwarts express:";
+                    message.setString(stringMessage);
+                    window.draw(message);
+                    window.display();
+                    HogwartsExpress.printTrain();
+                    sleep(10);
+                }
+            }
+
+            if (firstTime)
+            {
                 window.clear();
+                firstPromptButton.render(window);
+                window.display();
+                if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                {
+                    sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+                    if (firstPromptButton.isPressed(mousePosition))
+                    {
+                        sf::Text message;
+                        message.setString("please proceed to console and enter id of engine to begin");
+                        message.setFont(buttonFont);
+                        message.setFillColor(sf::Color::White);
+                        message.setCharacterSize(15);
+                        message.setPosition(345,310);
+
+                        window.clear();
+                        firstPromptButton.render(window);
+                        window.draw(message);
+                        window.display();
+
+                        cout<< "The engine for your Hogwarts Express has been created\nPlease input the ID for your engine:";
+                        cin >> ID;
+                        Bogie engineTemp(ID);
+                        HogwartsExpress.setEngine(engineTemp);
+                        cout << "The ID " << ID<< " has been assigned to your train engine.\n\nINPUT COMPLETE PROCEED TO THE GUI WINDOW.\n\n";
+                        firstTime = false;
+                    }
+                }
+            }
+
+            if(!firstTime)
+            {
+                window.clear();
+
                 window.draw(background);
 
                 window.draw(Heading1);
@@ -1067,95 +1176,12 @@ int main()
                 findButton.render(window);
                 printButton.render(window);
                 quitButton.render(window);
-
-                window.draw(messageBox);
-                message.setString(stringMessage);
-                window.draw(message);
-
                 window.display();
-                sleep(6);
-            }
-            else if(findButton.isPressed(mousePosition))
-            {
-                window.draw(messageBox);
-                string stringMessage="\nPlease proceed to the console window\n to input ID of the bogie you want \nto find in Hogwarts express:";
-                message.setString(stringMessage);
-                window.draw(message);
-                window.display();
-
-                int id;
-                cout<<"Enter the ID of the bogie you wish to find: ";
-                cin>>id;
-                if(!HogwartsExpress.SearchBogie(id) && HogwartsExpress.SearchBogie(id)!=-1)
-                {
-                    cout<<"\nThe bogie of ID "<<id<<" does not exist.\n";
-                }
-                else if(HogwartsExpress.SearchBogie(id)==-1)
-                {
-
-                    cout << "\nYour bogie of ID " << id << " is the engine.\nBOGIE INFO:\n";
-                    HogwartsExpress.printBogie(-1);
-                }
-                else
-                {
-                    cout<<"\nThe bogie of ID "<<id<<" has successfully been found at position number "<<HogwartsExpress.SearchBogie(id)<<endl<<"BOGIE INFO:\n";
-                    HogwartsExpress.printBogie(HogwartsExpress.SearchBogie(id));
-                }
-                cout<<"\nINPUT COMPLETE PROCEED TO THE GUI WINDOW.\n\n";
-
-                window.clear();
-                window.draw(background);
-
-                window.draw(Heading1);
-                window.draw(Heading2);
-                window.draw(Heading3);
-
-                addButton.render(window);
-                deleteButton.render(window);
-                reserveButton.render(window);
-                findButton.render(window);
-                printButton.render(window);
-                quitButton.render(window);
-
-                window.draw(messageBox);
-                stringMessage="\nYour Bogie has successfully been found \nin the end of the Hogwarts Express.\n";
-                message.setString(stringMessage);
-                window.draw(message);
-
-                window.display();
-                sleep(6);
-            }
-            else if(printButton.isPressed(mousePosition))
-            {
-                window.draw(messageBox);
-                string stringMessage="\nPlease proceed to the console window\n to see the printed info of the\n Hogwarts express:";
-                message.setString(stringMessage);
-                window.draw(message);
-                window.display();
-                HogwartsExpress.printTrain();
-                sleep(10);
             }
         }
-
-        window.clear();
-
-        window.draw(background);
-
-        window.draw(Heading1);
-        window.draw(Heading2);
-        window.draw(Heading3);
-
-        addButton.render(window);
-        deleteButton.render(window);
-        reserveButton.render(window);
-        findButton.render(window);
-        printButton.render(window);
-        quitButton.render(window);
-
-        window.display();
     }
 
     delete[] arrayOfIDs;
-    arrayOfIDs=nullptr;
+    arrayOfIDs = nullptr;
     return 0;
 }
